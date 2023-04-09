@@ -10,7 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +30,7 @@ public class UserController {
     }
 
     @RequestMapping("settings/qx/user/doLogin.do")
-    public @ResponseBody Object doLogin(String loginAct, String loginPwd, String isRemPwd, HttpServletRequest request, HttpSession session) {
+    public @ResponseBody Object doLogin(String loginAct, String loginPwd, String isRemPwd, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         // 封装参数
         Map<String, Object> map = new HashMap<>();
         map.put("loginAct", loginAct);
@@ -64,6 +66,24 @@ public class UserController {
 
                 // 把当前user信息保存到session中
                 session.setAttribute(Constant.SESSION_USER, user);
+
+                if ("true".equals(isRemPwd)) {
+                    // 如果记住密码，设置cookie
+                    Cookie c1 = new Cookie("loginAct", user.getLoginAct());
+                    c1.setMaxAge(10*24*60*60);
+                    response.addCookie(c1);
+                    Cookie c2 = new Cookie("loginPwd", user.getLoginPwd());
+                    c2.setMaxAge(10*24*60*60);
+                    response.addCookie(c2);
+                } else {
+                    // 如果不记住密码，则保证无相关cookie
+                    Cookie c1 = new Cookie("loginAct", "1");
+                    c1.setMaxAge(0);
+                    response.addCookie(c1);
+                    Cookie c2 = new Cookie("loginPwd", "1");
+                    c2.setMaxAge(0);
+                    response.addCookie(c2);
+                }
             }
         }
         return returnObject;
