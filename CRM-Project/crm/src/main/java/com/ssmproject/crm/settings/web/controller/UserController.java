@@ -1,13 +1,68 @@
 package com.ssmproject.crm.settings.web.controller;
 
+import com.ssmproject.crm.commons.constant.Constant;
+import com.ssmproject.crm.commons.pojo.ReturnObject;
+import com.ssmproject.crm.commons.utils.DateUtils;
+import com.ssmproject.crm.settings.pojo.User;
+import com.ssmproject.crm.settings.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class UserController {
 
-    @RequestMapping("settings/qx/user/login.do")
+    @Autowired
+    private UserService userService;
+
+    @RequestMapping("settings/qx/user/toLogin.do")
     public String toLogin() {
         return "settings/qx/user/login";
+    }
+
+    @RequestMapping("settings/qx/user/doLogin.do")
+    public @ResponseBody Object doLogin(String loginAct, String loginPwd, String isRemPwd, HttpServletRequest request) {
+        // 封装参数
+        Map<String, Object> map = new HashMap<>();
+        map.put("loginAct", loginAct);
+        map.put("loginPwd", loginPwd);
+        // 获取查询结果
+        User user = userService.queryUserByLoginActAndPwd(map);
+
+        // 根据查询结果生成相应信息
+        ReturnObject returnObject = new ReturnObject();
+        if (user == null) {
+            // 登录失败，用户名或密码错误
+            returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("用户名或密码错误");
+        } else {
+            // 进一步判断账号是否合法
+            String curTime = DateUtils.formatDateTime(new Date());
+            if (curTime.compareTo(user.getExpireTime()) > 0) {
+                // 登录失败，账号已过期
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("账号已过期");
+            } else if ("0".equals(user.getExpireTime())) {
+                // 登录失败，账号被锁定
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("账号被锁定");
+            } else if (!user.getAllowIps().contains(request.getRemoteAddr())) {
+                // 登录失败，非常用ip地址
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("非常用ip地址");
+            } else {
+                // 登录成功
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_SUCCESS);
+                returnObject.setMessage("登录成功");
+            }
+        }
+        System.out.println(returnObject);
+        return returnObject;
     }
 }

@@ -16,6 +16,7 @@
     <!-- springMvc 扫描包下的controller -->
     <context:component-scan base-package="com.ssmproject.crm.web.controller"/>
     <context:component-scan base-package="com.ssmproject.crm.settings.web.controller"/>
+    <context:component-scan base-package="com.ssmproject.crm.workbench.web.controller"/>
 
     <!-- 配置注解驱动 -->
     <mvc:annotation-driven/>

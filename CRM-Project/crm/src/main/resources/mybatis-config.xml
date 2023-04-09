@@ -9,10 +9,10 @@
     </settings>
     
     <typeAliases>
-        <package name="com.ssmproject.crm.model"/>
+        <package name="com.ssmproject.crm.settings.pojo"/>
     </typeAliases>
     
     <mappers>
-        <package name="com.ssmproject.crm.mapper"/>
+        <package name="com.ssmproject.crm.settings.mapper"/>
     </mappers>
 </configuration>

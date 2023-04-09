@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <% String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/"; %>
 <html>
 
@@ -8,6 +9,46 @@
 	<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 	<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 	<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			$("#loginBtn").on("click", function () {
+				// 获取用户名密码相关输入
+				var loginAct = $.trim($("#loginAct").val());
+				var loginPwd = $.trim($("#loginPwd").val());
+				var isRemPwd = $("#isRemPwd").prop("checkbox");
+
+				// 判断用户名密码是否为空
+				if (loginAct == "") {
+					alert("用户名不能为空");
+					return;
+				}
+				if (loginPwd == "") {
+					alert("密码不能为空");
+					return;
+				}
+
+				// 发送异步请求
+				$.ajax({
+					url:"settings/qx/user/doLogin.do",
+					data:{
+						loginAct:loginAct,
+						loginPwd:loginPwd,
+						isRemPwd:isRemPwd
+					},
+					type:"post",
+					dataType:"json",
+					// 若登录成功
+					success: function (data) {
+						if (data.code == "1") {
+							window.location.href = "workbench/index.do";
+						} else {
+							$("#msg").text(data.message);
+						}
+					}
+				});
+			});
+		});
+	</script>
 </head>
 
 <body>
@@ -26,19 +67,19 @@
 			<form action="workbench/index.html" class="form-horizontal" role="form">
 				<div class="form-group form-group-lg">
 					<div style="width: 350px;">
-						<input class="form-control" type="text" placeholder="用户名">
+						<input class="form-control" id="loginAct" type="text" placeholder="用户名">
 					</div>
 					<div style="width: 350px; position: relative;top: 20px;">
-						<input class="form-control" type="password" placeholder="密码">
+						<input class="form-control" id="loginPwd" type="password" placeholder="密码">
 					</div>
 					<div class="checkbox"  style="position: relative;top: 30px; left: 10px;">
 						<label>
-							<input type="checkbox"> 十天内免登录
+							<input type="checkbox" id="isRemPwd"> 十天内免登录
 						</label>
 						&nbsp;&nbsp;
-						<span id="msg"></span>
+						<span id="msg" style="color: red"></span>
 					</div>
-					<button type="submit" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
+					<button type="button" id="loginBtn" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
 				</div>
 			</form>
 		</div>
