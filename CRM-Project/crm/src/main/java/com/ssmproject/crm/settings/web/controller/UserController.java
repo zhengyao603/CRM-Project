@@ -26,6 +26,7 @@ public class UserController {
 
     @RequestMapping("settings/qx/user/toLogin.do")
     public String toLogin() {
+        // 转发到登陆界面
         return "settings/qx/user/login";
     }
 
@@ -87,5 +88,22 @@ public class UserController {
             }
         }
         return returnObject;
+    }
+
+    @RequestMapping("settings/qx/user/logout.do")
+    public String logout(HttpServletResponse response, HttpSession session) {
+        // 清空cookie
+        Cookie c1 = new Cookie("loginAct", "1");
+        c1.setMaxAge(0);
+        response.addCookie(c1);
+        Cookie c2 = new Cookie("loginPwd", "1");
+        c2.setMaxAge(0);
+        response.addCookie(c2);
+
+        // 销毁session
+        session.invalidate();
+
+        // 重定向到首页
+        return "redirect:/";
     }
 }
