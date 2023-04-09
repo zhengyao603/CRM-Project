@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @RequestMapping("settings/qx/user/doLogin.do")
-    public @ResponseBody Object doLogin(String loginAct, String loginPwd, String isRemPwd, HttpServletRequest request) {
+    public @ResponseBody Object doLogin(String loginAct, String loginPwd, String isRemPwd, HttpServletRequest request, HttpSession session) {
         // 封装参数
         Map<String, Object> map = new HashMap<>();
         map.put("loginAct", loginAct);
@@ -60,9 +61,11 @@ public class UserController {
                 // 登录成功
                 returnObject.setCode(Constant.RETURN_OBJECT_CODE_SUCCESS);
                 returnObject.setMessage("登录成功");
+
+                // 把当前user信息保存到session中
+                session.setAttribute(Constant.SESSION_USER, user);
             }
         }
-        System.out.println(returnObject);
         return returnObject;
     }
 }
