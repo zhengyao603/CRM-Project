@@ -8,6 +8,7 @@ public class WorkbenchIndexController {
 
     @RequestMapping("/workbench/index.do")
     public String index() {
+        // 转发到工作台整体页面
         return ("workbench/index");
     }
 }

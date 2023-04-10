@@ -2,6 +2,7 @@ package com.ssmproject.crm.settings.mapper;
 
 import com.ssmproject.crm.settings.pojo.User;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserMapper {
@@ -59,4 +60,10 @@ public interface UserMapper {
      * @return User 相应用户
      */
     User selectUserByLoginActAndPwd(Map<String, Object> map);
+
+    /**
+     * 查询所有用户信息
+     * @return List User 所有用户
+     */
+    List<User> selectAllUsers();
 }

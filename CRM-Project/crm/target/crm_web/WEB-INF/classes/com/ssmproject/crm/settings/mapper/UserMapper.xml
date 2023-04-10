@@ -194,9 +194,17 @@
     where id = #{id,jdbcType=CHAR}
   </update>
 
+  <!--通过账户密码查询用户-->
   <select id="selectUserByLoginActAndPwd" parameterType="java.util.Map" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/>
     from tbl_user
     where login_act=#{loginAct} and login_pwd=#{loginPwd}
+  </select>
+
+  <!--查询所有用户信息-->
+  <select id="selectAllUsers" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from tbl_user
+    where lock_state ="1"
   </select>
 </mapper>
