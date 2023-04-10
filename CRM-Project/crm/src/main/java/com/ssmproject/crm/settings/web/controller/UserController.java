@@ -24,13 +24,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("settings/qx/user/toLogin.do")
+    @RequestMapping("/settings/qx/user/toLogin.do")
     public String toLogin() {
         // 转发到登陆界面
         return "settings/qx/user/login";
     }
 
-    @RequestMapping("settings/qx/user/doLogin.do")
+    @RequestMapping("/settings/qx/user/doLogin.do")
     public @ResponseBody Object doLogin(String loginAct, String loginPwd, String isRemPwd, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         // 封装参数
         Map<String, Object> map = new HashMap<>();
@@ -90,7 +90,7 @@ public class UserController {
         return returnObject;
     }
 
-    @RequestMapping("settings/qx/user/logout.do")
+    @RequestMapping("/settings/qx/user/logout.do")
     public String logout(HttpServletResponse response, HttpSession session) {
         // 清空cookie
         Cookie c1 = new Cookie("loginAct", "1");
