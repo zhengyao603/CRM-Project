@@ -18,7 +18,97 @@
 <script type="text/javascript">
 
 	$(function(){
+		// 给创建按钮添加单击事件
+		$("#createActivityBtn").click(function () {
+			// 重置表单
+			$("#createActivityForm").get(0).reset();
+			// 显示模态窗口
+			$("#createActivityModal").modal("show");
+		});
 
+		// 给保存按钮添加单击事件
+		$("#activitySaveBtn").click(function () {
+			// 获取表单数据
+			var owner = $("#create-marketActivityOwner").val();
+			var name = $("#create-marketActivityName").val();
+			var startDate = $("#create-startDate").val();
+			var endDate = $("#create-endDate").val();
+			var cost = $("#create-cost").val();
+			var description = $("#create-describe").val();
+
+			// 表单非空验证
+			if (owner == "") {
+				alert("所有者不能为空！");
+				return;
+			}
+			if (name == "") {
+				alert("名称不能为空！");
+				return;
+			}
+
+			// 判断终止时间是否大于起始时间
+			if (startDate != "" && endDate != "") {
+				if (endDate < startDate) {
+					alert("起始时间不能大于终止时间！");
+					return
+				}
+			}
+
+			/*
+			  正则表达式：
+			     1，语言，语法：定义字符串的匹配模式，可以用来判断指定的具体字符串是否符合匹配模式。
+			     2,语法通则：
+			       1)//:在js中定义一个正则表达式.  var regExp=/...../;
+			       2)^：匹配字符串的开头位置
+			         $: 匹配字符串的结尾
+			       3)[]:匹配指定字符集中的一位字符。 var regExp=/^[abc]$/;
+			                                    var regExp=/^[a-z0-9]$/;
+			       4){}:匹配次数.var regExp=/^[abc]{5}$/;
+			            {m}:匹配m此
+			            {m,n}：匹配m次到n次
+			            {m,}：匹配m次或者更多次
+			       5)特殊符号：
+			         \d:匹配一位数字，相当于[0-9]
+			         \D:匹配一位非数字
+			         \w：匹配所有字符，包括字母、数字、下划线。
+			         \W:匹配非字符，除了字母、数字、下划线之外的字符。
+
+			         *:匹配0次或者多次，相当于{0,}
+			         +:匹配1次或者多次，相当于{1,}
+			         ?:匹配0次或者1次，相当于{0,1}
+			 */
+			// 判断成本是否为非负整数
+			var regExp = /^(([1-9]\d*)|0)$/;
+			if (!regExp.test(cost)) {
+				alert("成本不能为负数或小数！");
+				return;
+			}
+
+			// 发送ajax异步请求
+			$.ajax({
+				url: "workbench/activity/saveCreateActivity.do",
+				data: {
+					owner: owner,
+					name: name,
+					startDate: startDate,
+					endDate: endDate,
+					cost: cost,
+					description: description
+				},
+				type:"post",
+				dataType:"json",
+				success: function (data) {
+					if (data.code == "1") {
+						// 关闭模态窗口
+						$("#createActivityModal").modal("hide");
+						// 刷新市场活动数据
+					} else {
+						// 提示错误信息
+						alert(data.message);
+					}
+				}
+			});
+		});
 	});
 	
 </script>
@@ -37,7 +127,7 @@
 				</div>
 				<div class="modal-body">
 				
-					<form class="form-horizontal" role="form">
+					<form id="createActivityForm" class="form-horizontal" role="form">
 					
 						<div class="form-group">
 							<label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
@@ -55,13 +145,13 @@
 						</div>
 						
 						<div class="form-group">
-							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
+							<label for="create-startDate" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-startTime">
+								<input type="text" class="form-control" id="create-startDate">
 							</div>
-							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
+							<label for="create-endDate" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-endTime">
+								<input type="text" class="form-control" id="create-endDate">
 							</div>
 						</div>
                         <div class="form-group">
@@ -83,7 +173,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" class="btn btn-primary" id="activitySaveBtn">保存</button>
 				</div>
 			</div>
 		</div>
@@ -240,7 +330,7 @@
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createActivityModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+				  <button type="button" class="btn btn-primary" id="createActivityBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
