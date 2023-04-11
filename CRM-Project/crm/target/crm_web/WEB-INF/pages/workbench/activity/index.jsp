@@ -26,6 +26,17 @@
 			$("#createActivityModal").modal("show");
 		});
 
+		// 配置日历选择器
+		$(".date-pick").datetimepicker({
+			language: "zh-CN",
+			format: "yyyy-mm-dd",
+			minView: "month",
+			initialDate: new Date(),
+			autoclose: true,
+			todayBtn: true,
+			clearBtn: true
+		});
+
 		// 给保存按钮添加单击事件
 		$("#activitySaveBtn").click(function () {
 			// 获取表单数据
@@ -147,11 +158,11 @@
 						<div class="form-group">
 							<label for="create-startDate" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-startDate">
+								<input type="text" class="form-control date-pick" id="create-startDate" readonly>
 							</div>
 							<label for="create-endDate" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-endDate">
+								<input type="text" class="form-control date-pick" id="create-endDate" readonly>
 							</div>
 						</div>
                         <div class="form-group">
