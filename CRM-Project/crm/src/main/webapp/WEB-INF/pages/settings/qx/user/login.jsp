@@ -40,9 +40,9 @@
 				$.ajax({
 					url:"settings/qx/user/doLogin.do",
 					data:{
-						loginAct:loginAct,
-						loginPwd:loginPwd,
-						isRemPwd:isRemPwd
+						"loginAct":loginAct,
+						"loginPwd":loginPwd,
+						"isRemPwd":isRemPwd
 					},
 					type:"post",
 					dataType:"json",
