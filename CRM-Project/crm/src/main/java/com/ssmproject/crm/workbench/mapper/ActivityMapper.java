@@ -1,6 +1,7 @@
 package com.ssmproject.crm.workbench.mapper;
 
 import com.ssmproject.crm.workbench.pojo.Activity;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -66,4 +67,11 @@ public interface ActivityMapper {
      * @return
      */
     int selectCountOfActivityByCondition(Map<String, Object> map);
+
+    /**
+     * 删除制定id数组内的市场活动记录
+     * @param ids
+     * @return
+     */
+    int deleteActivityByIds(@Param("ids") String[] ids);
 }

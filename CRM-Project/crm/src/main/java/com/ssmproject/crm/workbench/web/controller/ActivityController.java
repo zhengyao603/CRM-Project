@@ -93,4 +93,28 @@ public class ActivityController {
 
         return retMap;
     }
+
+    @RequestMapping("/workbench/activity/deleteActivityByIds.do")
+    public @ResponseBody Object deleteActivityByIds(String[] id) {
+        ReturnObject returnObject = new ReturnObject();
+        System.out.println(id);
+
+        // 尝试删除指定市场活动数据
+        try {
+            int result = activityService.deleteActivityByIds(id);
+            if (result > 0) {
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_SUCCESS);
+                returnObject.setMessage("删除成功");
+            } else {
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("系统忙，请稍后再试...");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("系统忙，请稍后再试...");
+        }
+
+        return returnObject;
+    }
 }
