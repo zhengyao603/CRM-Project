@@ -21,13 +21,6 @@
     edit_time, edit_by
   </sql>
 
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_activity
-    where id = #{id,jdbcType=CHAR}
-  </select>
-
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from tbl_activity
     where id = #{id,jdbcType=CHAR}
@@ -222,5 +215,12 @@
       #{id}
     </foreach>
   </delete>
+
+  <select id="selectActivityById" parameterType="string" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_activity
+    where id = #{id}
+  </select>
 
 </mapper>

@@ -97,7 +97,6 @@ public class ActivityController {
     @RequestMapping("/workbench/activity/deleteActivityByIds.do")
     public @ResponseBody Object deleteActivityByIds(String[] id) {
         ReturnObject returnObject = new ReturnObject();
-        System.out.println(id);
 
         // 尝试删除指定市场活动数据
         try {
@@ -114,7 +113,12 @@ public class ActivityController {
             returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
             returnObject.setMessage("系统忙，请稍后再试...");
         }
-
         return returnObject;
+    }
+
+    @RequestMapping("/workbench/activity/queryActivityById.do")
+    public @ResponseBody Object queryActivityById(String id) {
+        // 根据id查询市场活动记录
+        return activityService.queryActivityById(id);
     }
 }

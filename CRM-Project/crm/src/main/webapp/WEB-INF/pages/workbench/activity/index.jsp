@@ -270,6 +270,45 @@
 				}
 			});
 		});
+
+		//给"修改"按钮添加单击事件
+		$("#editActivityBtn").click(function () {
+			//收集参数
+			//获取列表中被选中的checkbox
+			var checkedIds = $("#tBody input[type='checkbox']:checked");
+			if (checkedIds.size() == 0) {
+				alert("请选择要修改的市场活动");
+				return;
+			}
+			if (checkedIds.size() > 1){
+				alert("每次只能修改一条市场活动");
+				return;
+			}
+			//var id = checkedIds.val();
+			//var id = checkedIds.get(0).value;
+			var id = checkedIds[0].value;
+			//发送请求
+			$.ajax({
+				url: 'workbench/activity/queryActivityById.do',
+				data: {
+					id: id
+				},
+				type: 'post',
+				dataType: 'json',
+				success: function (data) {
+					//把市场活动的信息显示在修改的模态窗口上
+					$("#edit-id").val(data.id);
+					$("#edit-marketActivityOwner").val(data.owner);
+					$("#edit-marketActivityName").val(data.name);
+					$("#edit-startTime").val(data.startDate);
+					$("#edit-endTime").val(data.endDate);
+					$("#edit-cost").val(data.cost);
+					$("#edit-description").val(data.description);
+					//弹出模态窗口
+					$("#editActivityModal").modal("show");
+				}
+			});
+		});
 	});
 	
 </script>
@@ -353,7 +392,7 @@
 				<div class="modal-body">
 				
 					<form class="form-horizontal" role="form">
-					
+						<input type="hidden" id="edit-id">
 						<div class="form-group">
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -388,9 +427,9 @@
 						</div>
 						
 						<div class="form-group">
-							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
+							<label for="edit-description" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-describe">市场活动Marketing，是指品牌主办或参与的展览会议与公关市场活动，包括自行主办的各类研讨会、客户交流会、演示会、新产品发布会、体验会、答谢会、年会和出席参加并布展或演讲的展览会、研讨会、行业交流会、颁奖典礼等</textarea>
+								<textarea class="form-control" rows="3" id="edit-description">市场活动Marketing，是指品牌主办或参与的展览会议与公关市场活动，包括自行主办的各类研讨会、客户交流会、演示会、新产品发布会、体验会、答谢会、年会和出席参加并布展或演讲的展览会、研讨会、行业交流会、颁奖典礼等</textarea>
 							</div>
 						</div>
 						
@@ -492,7 +531,7 @@
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" id="createActivityBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-default" id="editActivityBtn"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger" id="deleteActivityBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				<div class="btn-group" style="position: relative; top: 18%;">
