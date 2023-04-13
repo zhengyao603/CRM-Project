@@ -121,4 +121,33 @@ public class ActivityController {
         // 根据id查询市场活动记录
         return activityService.queryActivityById(id);
     }
+
+    @RequestMapping("/workbench/activity/saveEditActivity.do")
+    public @ResponseBody Object saveEditActivity(Activity activity, HttpSession session) {
+        // 获取当前用户
+        User user = (User) session.getAttribute(Constant.SESSION_USER);
+
+        // 补全市场活动记录信息
+        activity.setEditTime(DateUtils.formatDateTime(new Date()));
+        activity.setEditBy(user.getId());
+
+        // 尝试更改市场活动记录
+        ReturnObject returnObject = new ReturnObject();
+        try {
+            int result = activityService.saveEditActivity(activity);
+            if (result > 0) {
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_SUCCESS);
+                returnObject.setMessage("更新成功");
+            } else {
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("系统繁忙，请稍后再试...");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("系统繁忙，请稍后再试...");
+        }
+
+        return returnObject;
+    }
 }
