@@ -320,6 +320,31 @@
 			var cost = $("#edit-cost").val();
 			var description = $("#edit-description").val();
 
+			// 表单非空验证
+			if (owner == "") {
+				alert("所有者不能为空！");
+				return;
+			}
+			if (name == "") {
+				alert("名称不能为空！");
+				return;
+			}
+
+			// 判断终止时间是否大于起始时间
+			if (startDate != "" && endDate != "") {
+				if (endDate < startDate) {
+					alert("起始时间不能大于终止时间！");
+					return
+				}
+			}
+
+			// 判断成本是否为非负整数
+			var regExp = /^(([1-9]\d*)|0)$/;
+			if (!regExp.test(cost)) {
+				alert("成本不能为负数或小数！");
+				return;
+			}
+
 			// 发送ajax异步请求
 			$.ajax({
 				url: "workbench/activity/saveEditActivity.do",
@@ -348,6 +373,10 @@
 					}
 				}
 			});
+		});
+
+		$("#exportActivityAllBtn").click(function () {
+			window.location.href='workbench/activity/exportAllActivities.do';
 		});
 	});
 	

@@ -374,6 +374,10 @@
 				}
 			});
 		});
+
+		$("#exportActivityAllBtn").click(function () {
+			window.location.href='workbench/activity/exportAllActivities.do';
+		});
 	});
 	
 </script>

@@ -8,13 +8,20 @@ import com.ssmproject.crm.settings.pojo.User;
 import com.ssmproject.crm.settings.service.UserService;
 import com.ssmproject.crm.workbench.pojo.Activity;
 import com.ssmproject.crm.workbench.service.ActivityService;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -149,5 +156,81 @@ public class ActivityController {
         }
 
         return returnObject;
+    }
+
+    @RequestMapping("/workbench/activity/exportAllActivities.do")
+    public void exportAllActivities(HttpServletResponse response) throws IOException {
+        // 查询所有市场活动记录
+        List<Activity> activityList = activityService.queryAllActivities();
+
+        // 新建Excel文件, 新建Excel表，新建Excel第一行
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet("市场活动记录表");
+        HSSFRow row = sheet.createRow(0);
+        HSSFCell cell = row.createCell(0);
+        cell.setCellValue("ID");
+        cell = row.createCell(1);
+        cell.setCellValue("所有者");
+        cell=row.createCell(2);
+        cell.setCellValue("名称");
+        cell=row.createCell(3);
+        cell.setCellValue("开始日期");
+        cell=row.createCell(4);
+        cell.setCellValue("结束日期");
+        cell=row.createCell(5);
+        cell.setCellValue("成本");
+        cell=row.createCell(6);
+        cell.setCellValue("描述");
+        cell=row.createCell(7);
+        cell.setCellValue("创建时间");
+        cell=row.createCell(8);
+        cell.setCellValue("创建者");
+        cell=row.createCell(9);
+        cell.setCellValue("修改时间");
+        cell=row.createCell(10);
+        cell.setCellValue("修改者");
+
+        //遍历activityList，创建HSSFRow对象，生成所有的数据行
+        if(activityList != null && activityList.size() > 0){
+            Activity activity = null;
+            for(int i=0;i<activityList.size();i++){
+                activity=activityList.get(i);
+                //每遍历出一个activity，生成一行
+                row=sheet.createRow(i+1);
+                //每一行创建11列，每一列的数据从activity中获取
+                cell=row.createCell(0);
+                cell.setCellValue(activity.getId());
+                cell=row.createCell(1);
+                cell.setCellValue(activity.getOwner());
+                cell=row.createCell(2);
+                cell.setCellValue(activity.getName());
+                cell=row.createCell(3);
+                cell.setCellValue(activity.getStartDate());
+                cell=row.createCell(4);
+                cell.setCellValue(activity.getEndDate());
+                cell=row.createCell(5);
+                cell.setCellValue(activity.getCost());
+                cell=row.createCell(6);
+                cell.setCellValue(activity.getDescription());
+                cell=row.createCell(7);
+                cell.setCellValue(activity.getCreateTime());
+                cell=row.createCell(8);
+                cell.setCellValue(activity.getCreateBy());
+                cell=row.createCell(9);
+                cell.setCellValue(activity.getEditTime());
+                cell=row.createCell(10);
+                cell.setCellValue(activity.getEditBy());
+            }
+        }
+
+        // 设置响应内容格式和响应头
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        response.addHeader("Content-Disposition", "attachment;filename=activityList.xls");
+
+        // 拿到响应文件输出流并写入
+        OutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.flush();
     }
 }
