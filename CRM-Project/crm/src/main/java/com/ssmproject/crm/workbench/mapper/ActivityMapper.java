@@ -79,7 +79,18 @@ public interface ActivityMapper {
      * @param activity
      * @return
      */
-    int updateActivity(Activity activity);
+    int updateActivity(@Param("activity") Activity activity);
 
+    /**
+     * 查询所有市场活动记录
+     * @return
+     */
     List<Activity> selectAllActivities();
+
+    /**
+     * 批量插入市场活动记录
+     * @param activityList
+     * @return
+     */
+    int insertActivities(@Param("activityList") List<Activity> activityList);
 }

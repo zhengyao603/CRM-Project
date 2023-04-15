@@ -239,4 +239,13 @@
     left join tbl_user u3 on a.edit_by = u3.id
   </select>
 
+  <insert id="insertActivities" parameterType="com.ssmproject.crm.workbench.pojo.Activity">
+    insert into tbl_activity (id, owner, name, start_date, end_date, cost, description, create_time, create_by)
+    values
+    <foreach collection="activityList" item="activity" separator=",">
+      (#{activity.id}, #{activity.owner}, #{activity.name}, #{activity.startDate}, #{activity.endDate},
+       #{activity.cost}, #{activity.description}, #{activity.createTime}, #{activity.createBy})
+    </foreach>
+  </insert>
+
 </mapper>

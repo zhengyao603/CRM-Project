@@ -3,6 +3,7 @@ package com.ssmproject.crm.workbench.web.controller;
 import com.ssmproject.crm.commons.constant.Constant;
 import com.ssmproject.crm.commons.pojo.ReturnObject;
 import com.ssmproject.crm.commons.utils.DateUtils;
+import com.ssmproject.crm.commons.utils.HSSFUtils;
 import com.ssmproject.crm.commons.utils.UUIDUtils;
 import com.ssmproject.crm.settings.pojo.User;
 import com.ssmproject.crm.settings.service.UserService;
@@ -16,16 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class ActivityController {
@@ -171,54 +171,54 @@ public class ActivityController {
         cell.setCellValue("ID");
         cell = row.createCell(1);
         cell.setCellValue("所有者");
-        cell=row.createCell(2);
+        cell = row.createCell(2);
         cell.setCellValue("名称");
-        cell=row.createCell(3);
+        cell = row.createCell(3);
         cell.setCellValue("开始日期");
-        cell=row.createCell(4);
+        cell = row.createCell(4);
         cell.setCellValue("结束日期");
-        cell=row.createCell(5);
+        cell = row.createCell(5);
         cell.setCellValue("成本");
-        cell=row.createCell(6);
+        cell = row.createCell(6);
         cell.setCellValue("描述");
-        cell=row.createCell(7);
+        cell = row.createCell(7);
         cell.setCellValue("创建时间");
-        cell=row.createCell(8);
+        cell = row.createCell(8);
         cell.setCellValue("创建者");
-        cell=row.createCell(9);
+        cell = row.createCell(9);
         cell.setCellValue("修改时间");
-        cell=row.createCell(10);
+        cell = row.createCell(10);
         cell.setCellValue("修改者");
 
         //遍历activityList，创建HSSFRow对象，生成所有的数据行
-        if(activityList != null && activityList.size() > 0){
+        if (activityList != null && activityList.size() > 0){
             Activity activity = null;
-            for(int i=0;i<activityList.size();i++){
-                activity=activityList.get(i);
+            for (int i = 0;i < activityList.size(); i++){
+                activity = activityList.get(i);
                 //每遍历出一个activity，生成一行
-                row=sheet.createRow(i+1);
+                row = sheet.createRow(i+1);
                 //每一行创建11列，每一列的数据从activity中获取
-                cell=row.createCell(0);
+                cell = row.createCell(0);
                 cell.setCellValue(activity.getId());
-                cell=row.createCell(1);
+                cell = row.createCell(1);
                 cell.setCellValue(activity.getOwner());
-                cell=row.createCell(2);
+                cell = row.createCell(2);
                 cell.setCellValue(activity.getName());
-                cell=row.createCell(3);
+                cell = row.createCell(3);
                 cell.setCellValue(activity.getStartDate());
-                cell=row.createCell(4);
+                cell = row.createCell(4);
                 cell.setCellValue(activity.getEndDate());
-                cell=row.createCell(5);
+                cell = row.createCell(5);
                 cell.setCellValue(activity.getCost());
-                cell=row.createCell(6);
+                cell = row.createCell(6);
                 cell.setCellValue(activity.getDescription());
-                cell=row.createCell(7);
+                cell = row.createCell(7);
                 cell.setCellValue(activity.getCreateTime());
-                cell=row.createCell(8);
+                cell = row.createCell(8);
                 cell.setCellValue(activity.getCreateBy());
-                cell=row.createCell(9);
+                cell = row.createCell(9);
                 cell.setCellValue(activity.getEditTime());
-                cell=row.createCell(10);
+                cell = row.createCell(10);
                 cell.setCellValue(activity.getEditBy());
             }
         }
@@ -232,5 +232,64 @@ public class ActivityController {
         workbook.write(outputStream);
         workbook.close();
         outputStream.flush();
+    }
+
+    @RequestMapping("/workbench/activity/importActivities.do")
+    public @ResponseBody Object importActivities(MultipartFile activityFile, HttpSession session, HttpServletResponse response) {
+        // 获取当前用户
+        User user = (User) session.getAttribute(Constant.SESSION_USER);
+        ReturnObject returnObject = new ReturnObject();
+
+        // 尝试读取Excel文件并将数据插入至数据库
+        try {
+            // 获取Excel表
+            InputStream inputStream = activityFile.getInputStream();
+            HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
+            HSSFSheet sheet = workbook.getSheetAt(0);
+
+            HSSFRow row = null;
+            HSSFCell cell = null;
+            Activity activity = null;
+            List<Activity> activityList = new ArrayList<>();
+
+            // 循环读取信息,封装到activity中
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                row = sheet.getRow(i);
+                activity = new Activity();
+                activity.setId(UUIDUtils.getUUID());
+                activity.setOwner(user.getId());
+                activity.setCreateTime(DateUtils.formatDateTime(new Date()));
+                activity.setCreateBy(user.getId());
+
+                for(int j = 0;j < row.getLastCellNum(); j++) {
+                    cell = row.getCell(j);
+                    String cellValue = HSSFUtils.getCellValueForStr(cell);
+                    if(j == 0){
+                        activity.setName(cellValue);
+                    }else if(j == 1){
+                        activity.setStartDate(cellValue);
+                    }else if(j == 2){
+                        activity.setEndDate(cellValue);
+                    }else if(j == 3){
+                        activity.setCost(cellValue);
+                    }else if(j == 4){
+                        activity.setDescription(cellValue);
+                    }
+                }
+                //每一行中所有列都封装完成之后，把activity保存到list中
+                activityList.add(activity);
+            }
+
+            int result = activityService.saveCreateActivities(activityList);
+            returnObject.setCode(Constant.RETURN_OBJECT_CODE_SUCCESS);
+            returnObject.setMessage("插入成功");
+            returnObject.setRetData(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("系统忙，请稍后再试...");
+        }
+
+        return returnObject;
     }
 }
