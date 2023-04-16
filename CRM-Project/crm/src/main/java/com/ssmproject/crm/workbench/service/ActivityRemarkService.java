@@ -8,4 +8,6 @@ public interface ActivityRemarkService {
     List<ActivityRemark> queryActivityRemarkForDetailByActivityId(String activityId);
 
     int saveEditActivityRemark(ActivityRemark remark);
+
+    int deleteActivityRemarkById(String id);
 }

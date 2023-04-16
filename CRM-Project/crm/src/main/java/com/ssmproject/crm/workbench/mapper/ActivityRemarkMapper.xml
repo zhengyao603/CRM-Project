@@ -24,11 +24,6 @@
     where id = #{id,jdbcType=CHAR}
   </select>
 
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from tbl_activity_remark
-    where id = #{id,jdbcType=CHAR}
-  </delete>
-
   <insert id="insertSelective" parameterType="com.ssmproject.crm.workbench.pojo.ActivityRemark" >
     insert into tbl_activity_remark
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -138,4 +133,10 @@
     insert into tbl_activity_remark(id, note_content, create_time, create_by, edit_flag, activity_id)
     values (#{id}, #{noteContent}, #{createTime}, #{createBy}, #{editFlag}, #{activityId})
   </insert>
+
+  <delete id="deleteActivityRemarkById" parameterType="string">
+    delete
+    from tbl_activity_remark
+    where id = #{id}
+  </delete>
 </mapper>

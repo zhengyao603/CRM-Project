@@ -97,6 +97,27 @@
 				}
 			});
 		});
+
+		$("#remarkDivList").on("click", "a[name='deleteA']", function () {
+			var remarkId = $(this).attr("remarkId");
+			$.ajax({
+				url: "workbench/activity/deleteActivityRemark.do",
+				data: {
+					id: remarkId
+				},
+				type: "post",
+				dataType: "json",
+				success: function (data) {
+					if (data.code == "1") {
+						// 刷新备注列表
+						$("#div_" + remarkId).remove();
+					} else {
+						// 提示信息
+						alert(data.message);
+					}
+				}
+			});
+		});
 	});
 	
 </script>
@@ -205,9 +226,9 @@
 					<h5>${remark.noteContent}</h5>
 					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> ${remark.editFlag == "1" ? remark.editTime : remark.createTime} 由${remark.editFlag == "1" ? remark.editBy : remark.editBy}${remark.editFlag=='1'?'修改':'创建'}</small>
 					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-						<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						<a class="myHref" name="editA" remarkId="${remark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
 						&nbsp;&nbsp;&nbsp;&nbsp;
-						<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						<a class="myHref" name="deleteA" remarkId="${remark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
 					</div>
 				</div>
 			</div>
