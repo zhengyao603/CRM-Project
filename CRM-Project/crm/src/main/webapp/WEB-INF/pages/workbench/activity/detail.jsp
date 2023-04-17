@@ -64,7 +64,7 @@
 			}
 
 			$.ajax({
-				url: "workbench/activity/saveEditActivityRemark.do",
+				url: "workbench/activity/saveCreateActivityRemark.do",
 				data: {
 					noteContent: noteContent,
 					activityId: activityId
@@ -98,7 +98,7 @@
 			});
 		});
 
-		$("#remarkDivList").on("click", "a[name='deleteA']", function () {
+		$("#remarkDivList").on("click", "a[name='deleteA']", function() {
 			var remarkId = $(this).attr("remarkId");
 			$.ajax({
 				url: "workbench/activity/deleteActivityRemark.do",
@@ -114,6 +114,49 @@
 					} else {
 						// 提示信息
 						alert(data.message);
+					}
+				}
+			});
+		});
+
+		$("#remarkDivList").on("click", "a[name='editA']", function() {
+			// 收集参数
+			var remarkId = $(this).attr("remarkId");
+			var noteContent = $("#div_" + remarkId + " h5").text();
+
+			// 参数绑定到修改模态窗口
+			$("#edit-id").val(remarkId);
+			$("#edit-noteContent").val(noteContent);
+			$("#editRemarkModal").modal("show");
+		});
+
+		$("#updateRemarkBtn").click(function() {
+			// 收集参数
+			var remarkId = $("#edit-id").val();
+			var noteContent = $.trim($("#edit-noteContent").val());
+			// 表单验证
+			if (noteContent == ""){
+				alert("备注内容不能为空！");
+				return;
+			}
+
+			// 发送ajax请求
+			$.ajax({
+				url: "workbench/activity/saveEditActivityRemark.do",
+				data: {
+					id: remarkId,
+					noteContent: noteContent
+				},
+				type: "post",
+				dataType: "json",
+				success: function(data) {
+					if (data.code == "1") {
+						$("#div_" + remarkId + " h5").text(data.retData.noteContent);
+						$("#div_" + remarkId + " small").text(" " + data.retData.editTime + " 由${sessionScope.sessionUser.name}修改");
+						$("#editRemarkModal").modal("hide");
+					} else {
+						alert(data.message);
+						$("#editRemarkModal").modal("show");
 					}
 				}
 			});
@@ -139,10 +182,11 @@
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal" role="form">
+						<input type="hidden" id="edit-id">
                         <div class="form-group">
-                            <label for="noteContent" class="col-sm-2 control-label">内容</label>
+                            <label for="edit-noteContent" class="col-sm-2 control-label">内容</label>
                             <div class="col-sm-10" style="width: 81%;">
-                                <textarea class="form-control" rows="3" id="noteContent"></textarea>
+                                <textarea class="form-control" rows="3" id="edit-noteContent"></textarea>
                             </div>
                         </div>
                     </form>

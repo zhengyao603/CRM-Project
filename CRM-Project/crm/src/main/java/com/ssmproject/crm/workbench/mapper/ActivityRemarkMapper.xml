@@ -139,4 +139,10 @@
     from tbl_activity_remark
     where id = #{id}
   </delete>
+  
+  <update id="updateActivityRemark" parameterType="com.ssmproject.crm.workbench.pojo.ActivityRemark">
+    update tbl_activity_remark
+    set note_content = #{noteContent}, edit_by = #{editBy}, edit_time = #{editTime}, edit_flag = '1'
+    where id = #{id}
+  </update>
 </mapper>

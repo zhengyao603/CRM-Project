@@ -21,8 +21,8 @@ public class ActivityRemarkController {
     @Autowired
     private ActivityRemarkService activityRemarkService;
 
-    @RequestMapping("/workbench/activity/saveEditActivityRemark.do")
-    public @ResponseBody Object saveEditActivityRemark(ActivityRemark remark, HttpSession session) {
+    @RequestMapping("/workbench/activity/saveCreateActivityRemark.do")
+    public @ResponseBody Object saveCreateActivityRemark(ActivityRemark remark, HttpSession session) {
         User user = (User) session.getAttribute(Constant.SESSION_USER);
 
         // 封装缺失参数
@@ -33,7 +33,7 @@ public class ActivityRemarkController {
 
         ReturnObject returnObject = new ReturnObject();
         try {
-            int result = activityRemarkService.saveEditActivityRemark(remark);
+            int result = activityRemarkService.saveCreateActivityRemark(remark);
             if (result > 0) {
                 returnObject.setCode(Constant.RETURN_OBJECT_CODE_SUCCESS);
                 returnObject.setRetData(remark);
@@ -46,12 +46,14 @@ public class ActivityRemarkController {
             returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
             returnObject.setMessage("系统忙，请稍后再试");
         }
+
         return returnObject;
     }
 
     @RequestMapping("/workbench/activity/deleteActivityRemark.do")
     public @ResponseBody Object deleteActivityRemark(String id) {
         ReturnObject returnObject = new ReturnObject();
+        // 尝试删除当前市场活动记录备注
         try {
             int result = activityRemarkService.deleteActivityRemarkById(id);
             if (result > 0) {
@@ -64,6 +66,36 @@ public class ActivityRemarkController {
             e.printStackTrace();
             returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
             returnObject.setMessage("系统忙，请稍后再试");
+        }
+
+        return returnObject;
+    }
+
+    @RequestMapping("/workbench/activity/saveEditActivityRemark.do")
+    public @ResponseBody Object saveEditActivityRemark(ActivityRemark remark, HttpSession session) {
+        // 获取当前User
+        User use = (User) session.getAttribute(Constant.SESSION_USER);
+
+        // 封装缺失参数
+        remark.setEditBy(use.getId());
+        remark.setEditTime(DateUtils.formatDateTime(new Date()));
+        remark.setEditFlag(Constant.REMARK_EDIT_FLAG_YES_EDITED);
+
+        ReturnObject returnObject = new ReturnObject();
+        // 尝试修改当前市场活动记录备注
+        try {
+            int result = activityRemarkService.saveEditActivityRemark(remark);
+            if (result > 0) {
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_SUCCESS);
+                returnObject.setRetData(remark);
+            } else {
+                returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("系统繁忙，请稍后再试...");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constant.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("系统繁忙，请稍后再试...");
         }
 
         return returnObject;

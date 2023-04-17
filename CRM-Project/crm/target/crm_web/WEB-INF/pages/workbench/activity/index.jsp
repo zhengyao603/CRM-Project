@@ -667,6 +667,7 @@
 						</tr>
 					</thead>
 					<tbody id="tBody"></tbody>
+					<tbody id="tBody"></tbody>
 				</table>
 				<div id="demo_pag1"></div>
 			</div>
